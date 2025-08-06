@@ -46,8 +46,23 @@ async def list_of_smth():
 
 def summar(hours, minutes):
     summ_date = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Часы", callback_data="hrs")],
         [InlineKeyboardButton(text="<<", callback_data="hours_minus"), InlineKeyboardButton(text=str(hours), callback_data="hours"), InlineKeyboardButton(text=">>", callback_data="hours_plus")],
+        [InlineKeyboardButton(text="Минуты", callback_data="mins")],      
         [InlineKeyboardButton(text="<<", callback_data="minutes_minus"), InlineKeyboardButton(text=str(minutes), callback_data="minutes"), InlineKeyboardButton(text=">>", callback_data="minutes_plus")],
-        [InlineKeyboardButton(text="Назад", callback_data="back")],
+        [InlineKeyboardButton(text="Назад", callback_data="back"), InlineKeyboardButton(text="Далее", callback_data="datetime_next")]
         ])
     return summ_date
+
+dates = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="Сегондя", callback_data="date_today")],
+    [InlineKeyboardButton(text="Вчера", callback_data="date_onedayago")],
+    [InlineKeyboardButton(text="Позавчера", callback_data="date_twodayago")],
+    [InlineKeyboardButton(text="Назад", callback_data="back")]
+    ])
+
+presets = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="За посл час", callback_data="last_hour"), InlineKeyboardButton(text="За этот день", callback_data="last_day")],
+    [InlineKeyboardButton(text="За вчера", callback_data="yesterday")],
+    [InlineKeyboardButton(text="Назад", callback_data="back")]
+])

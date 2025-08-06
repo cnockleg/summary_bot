@@ -27,7 +27,8 @@ class Dcd(StatesGroup):
     query = State()
 
 class Time(StatesGroup):
-    choose = State()
+    choosedate = State()
+    choosetime = State()
 
 # _______________________________________________________________________________________________________________________________________________
 
@@ -142,22 +143,32 @@ async def cmd_voice(message: Message):
 # _______________________________________________________________________________________________________________________________________________
 # hrs = 12
 # mins = 40
-
 @router.message(F.text == "Суммаризация (готовые периоды времени) ✨")
 async def auto_sum(message: Message, state: FSMContext):
     await sleep(0.3)
     await message.delete()
-    await state.set_state(Time.choose)
-    data = await state.update_data(hrs=12, mins=40)
-    await message.answer("соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
+    await state.set_state(Time.choosetime)
+    data = await state.update_data(hrs=12, mins=40, date=F.data)
+    print(data)
+    await message.answer("соси пока не готово", reply_markup=kb.presets)
+
 
 @router.message(F.text == "Суммаризация (произвольный период времени) ✨")
-async def auto_sum(message: Message, state: FSMContext):
+async def auto_sum_choosedate(message: Message, state: FSMContext):
     await sleep(0.3)
     await message.delete()
-    await state.set_data(Time.choose)
+    await state.set_state(Time.choosedate)
+    await message.answer("выберите дату для суммаризации",reply_markup=kb.dates)
+
+
+@router.callback_query(Time.choosedate)
+async def auto_sum_choosetime(callback: CallbackQuery, state: FSMContext):
+    await sleep(0.3)
+    # await message.delete()
+    await state.update_data(date=callback.data)
+    await state.set_state(Time.choosetime)
     data = await state.update_data(hrs=12, mins=40)
-    await message.answer("соси пока не готово 2", reply_markup=kb.summar(data['hrs'], data['mins']))
+    await callback.message.edit_text("теперь выбери время", reply_markup=kb.summar(data['hrs'], data['mins']))
 
 
 @router.callback_query(F.data == "hours_minus")
@@ -169,7 +180,7 @@ async def hours_minus(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
 
 @router.callback_query(F.data == "hours_plus")
-async def hours_minus(callback: CallbackQuery, state: FSMContext):
+async def hours_plus(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     data["hrs"] = min(23, data.get("hrs") + 1)
     await state.update_data(hrs=data["hrs"])
@@ -177,7 +188,7 @@ async def hours_minus(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
 
 @router.callback_query(F.data == "minutes_minus")
-async def hours_minus(callback: CallbackQuery, state: FSMContext):
+async def minutes_minus(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     data["mins"] = max(0, data.get("mins") - 5)
     await state.update_data(mins=data["mins"])
@@ -185,9 +196,15 @@ async def hours_minus(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
 
 @router.callback_query(F.data == "minutes_plus")
-async def hours_minus(callback: CallbackQuery, state: FSMContext):
+async def minutes_plus(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     data["mins"] = min(59, data.get("mins") + 5)
     await state.update_data(mins=data["mins"])
     await callback.answer()
     await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
+
+@router.callback_query(F.data == "datetime_next")
+async def get_datetime(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    await callback.message.edit_text(text="красава, я обязательно это никуда не запишу")
+    await state.clear()
