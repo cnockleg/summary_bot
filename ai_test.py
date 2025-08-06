@@ -1,4 +1,5 @@
 import os
+import asyncio
 
 from openai import AsyncOpenAI
 from dotenv import load_dotenv
@@ -23,3 +24,5 @@ async def query(prompt: str):
   )
   print(completion)
   return completion.choices[0].message.content
+
+# asyncio.run(query(prompt=input()))

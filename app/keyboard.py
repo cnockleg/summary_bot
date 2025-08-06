@@ -2,9 +2,14 @@ from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
                            InlineKeyboardMarkup, InlineKeyboardButton)
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
+# hours = 12
+# minutes = 40
+
 key_reply = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text="Каталог")],
-    [KeyboardButton(text="Коразина"), KeyboardButton(text="Помощь")]
+    [KeyboardButton(text="/stt"), KeyboardButton(text="/buy")],
+    [KeyboardButton(text="/reg"), KeyboardButton(text="/bot")],
+    [KeyboardButton(text="Суммаризация (готовые периоды времени) ✨")],
+    [KeyboardButton(text="Суммаризация (произвольный период времени) ✨")]
 ],          
             resize_keyboard=True,
             input_field_placeholder="Выбери.")
@@ -38,3 +43,11 @@ async def list_of_smth():
 
     keyboard.add(InlineKeyboardButton(text="Назад", callback_data="back_buttons"))
     return keyboard.adjust(2).as_markup()
+
+def summar(hours, minutes):
+    summ_date = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="<<", callback_data="hours_minus"), InlineKeyboardButton(text=str(hours), callback_data="hours"), InlineKeyboardButton(text=">>", callback_data="hours_plus")],
+        [InlineKeyboardButton(text="<<", callback_data="minutes_minus"), InlineKeyboardButton(text=str(minutes), callback_data="minutes"), InlineKeyboardButton(text=">>", callback_data="minutes_plus")],
+        [InlineKeyboardButton(text="Назад", callback_data="back")],
+        ])
+    return summ_date

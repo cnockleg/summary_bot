@@ -1,4 +1,5 @@
 import tempfile
+from asyncio import sleep
 
 from aiogram import F, Router
 from aiogram.filters import CommandStart, Command
@@ -25,11 +26,14 @@ class Ai(StatesGroup):
 class Dcd(StatesGroup):
     query = State()
 
+class Time(StatesGroup):
+    choose = State()
+
 # _______________________________________________________________________________________________________________________________________________
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
-    await message.answer(f'ку {message.from_user.first_name}.\n /help для инфы.')
+    await message.answer(f'ку {message.from_user.first_name}.\n /help для инфы.', reply_markup=kb.key_reply)
 
 @router.message(Command('help'))
 async def cmd_help(message: Message):
@@ -135,3 +139,55 @@ async def cmd_voice(message: Message):
     await message.answer(res, reply_markup=kb.back)
     print(res)
 
+# _______________________________________________________________________________________________________________________________________________
+# hrs = 12
+# mins = 40
+
+@router.message(F.text == "Суммаризация (готовые периоды времени) ✨")
+async def auto_sum(message: Message, state: FSMContext):
+    await sleep(0.3)
+    await message.delete()
+    await state.set_state(Time.choose)
+    data = await state.update_data(hrs=12, mins=40)
+    await message.answer("соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
+
+@router.message(F.text == "Суммаризация (произвольный период времени) ✨")
+async def auto_sum(message: Message, state: FSMContext):
+    await sleep(0.3)
+    await message.delete()
+    await state.set_data(Time.choose)
+    data = await state.update_data(hrs=12, mins=40)
+    await message.answer("соси пока не готово 2", reply_markup=kb.summar(data['hrs'], data['mins']))
+
+
+@router.callback_query(F.data == "hours_minus")
+async def hours_minus(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    data["hrs"] = max(0, data.get("hrs") - 1)
+    await state.update_data(hrs=data["hrs"])
+    await callback.answer()
+    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
+
+@router.callback_query(F.data == "hours_plus")
+async def hours_minus(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    data["hrs"] = min(23, data.get("hrs") + 1)
+    await state.update_data(hrs=data["hrs"])
+    await callback.answer()
+    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
+
+@router.callback_query(F.data == "minutes_minus")
+async def hours_minus(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    data["mins"] = max(0, data.get("mins") - 5)
+    await state.update_data(mins=data["mins"])
+    await callback.answer()
+    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
+
+@router.callback_query(F.data == "minutes_plus")
+async def hours_minus(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    data["mins"] = min(59, data.get("mins") + 5)
+    await state.update_data(mins=data["mins"])
+    await callback.answer()
+    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
