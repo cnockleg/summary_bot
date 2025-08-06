@@ -2,7 +2,7 @@ import tempfile
 
 from aiogram import F, Router
 from aiogram.filters import CommandStart, Command
-from aiogram.types import Message, FSInputFile, Voice, CallbackQuery
+from aiogram.types import Message, FSInputFile, Voice, CallbackQuery, Chat
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 

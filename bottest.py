@@ -1,10 +1,14 @@
+import os
 import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from dotenv import load_dotenv
 
-from conf import TOKEN
 from app.handlers import router
+
+load_dotenv(r"C:\Users\cnockleg\OneDrive\Документы\проги\summarybot\conf.env")
+TOKEN = os.getenv("TOKEN") 
 
 
 bot = Bot(token=TOKEN)
