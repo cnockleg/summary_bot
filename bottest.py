@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 
 from app.handlers import router
 
-load_dotenv(r"C:\Users\cnockleg\OneDrive\Документы\проги\summarybot\conf.env")
-TOKEN = os.getenv("TOKEN") 
+load_dotenv("conf.env")
+TOKEN = os.getenv("TOKEN")
 
 
 bot = Bot(token=TOKEN)

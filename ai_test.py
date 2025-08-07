@@ -1,10 +1,10 @@
 import os
-import asyncio
+# import asyncio
 
 from openai import AsyncOpenAI
 from dotenv import load_dotenv
 
-load_dotenv(r"C:\Users\cnockleg\OneDrive\Документы\проги\summarybot\conf.env")
+load_dotenv("conf.env")
 AI_TOKEN = os.getenv("AI_TOKEN") 
 
 client = AsyncOpenAI(

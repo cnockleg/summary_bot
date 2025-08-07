@@ -141,8 +141,7 @@ async def cmd_voice(message: Message):
     print(res)
 
 # _______________________________________________________________________________________________________________________________________________
-# hrs = 12
-# mins = 40
+
 @router.message(F.text == "Суммаризация (готовые периоды времени) ✨")
 async def auto_sum(message: Message, state: FSMContext):
     await sleep(0.3)
@@ -159,7 +158,6 @@ async def auto_sum_choosedate(message: Message, state: FSMContext):
     await message.delete()
     await state.set_state(Time.choosedate)
     await message.answer("выберите дату для суммаризации",reply_markup=kb.dates)
-
 
 @router.callback_query(Time.choosedate)
 async def auto_sum_choosetime(callback: CallbackQuery, state: FSMContext):
@@ -203,8 +201,17 @@ async def minutes_plus(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
 
+
 @router.callback_query(F.data == "datetime_next")
 async def get_datetime(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_text(text="красава, я обязательно это никуда не запишу")
     await state.clear()
+
+# _______________________________________________________________________________________________________________________________________________
+
+# from db import
+# @router.message(F.text)
+# async def context_handler(message: Message):
+
+#     await message.answer()
