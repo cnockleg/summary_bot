@@ -16,7 +16,7 @@ class MessageDB:
                 CREATE TABLE IF NOT EXISTS {table_name} (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_id INTEGER NOT NULL,
-                    username TEXT NOT NULL,
+                    username TEXT,
                     message TEXT NOT NULL,
                     timestamp TIMESTAMP NOT NULL
                 );
@@ -59,16 +59,17 @@ class MessageDB:
 if __name__ == '__main__':
         
     db = MessageDB()
-    table_name = 'chat1'
+    table_name = 'chat2'
 
-    db.create_table(table_name)
+    # db.create_table(table_name)
 
-    db.insert_message(table_name, 1, 'Артем', 'ляллялялялялялялля')
-    db.insert_message(table_name, 1, 'Артем', 'asl;dadkasl;dka')
-    db.insert_message(table_name, 1, 'Артем', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+    # db.insert_message(table_name, 1, 'Артем', 'ляллялялялялялялля')
+    # db.insert_message(table_name, 1, 'Артем', 'asl;dadkasl;dka')
+    # db.insert_message(table_name, 1, 'Артем', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 
-    messages = db.select_messages_by_time(table_name, "2025-08-01T00:00:00")
-    for m in messages:
-        print(m)
+    # messages = db.select_messages_by_time(table_name, "2025-08-01T00:00:00")
+    # for m in messages:
+    #     print(m)
 
-    db.delete_messages_before_time(table_name, "2025-08-00T00:00:00")
+    # db.delete_messages_before_time(table_name, "2025-08-00T00:00:00")
+    db.select_messages_by_time(table_name, "2025-08-08T00:00:00")

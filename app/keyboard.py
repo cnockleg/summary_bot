@@ -21,13 +21,13 @@ shop = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Назад", callback_data="back")]
     ])
 
-setting = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="пососать", url="https://www.pornhub.com/")],
-    [InlineKeyboardButton(text="Назад", callback_data="back")]
-    ])
+# setting = InlineKeyboardMarkup(inline_keyboard=[
+#     [InlineKeyboardButton(text="пососать", callback_data="check_table")],
+#     [InlineKeyboardButton(text="Назад", callback_data="back")]
+#     ])
 
 setting_for_buttons = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="пососать", url="https://www.pornhub.com/")],
+    [InlineKeyboardButton(text="пососать", callback_data="check_table")],
     [InlineKeyboardButton(text="Назад", callback_data="back_buttons")]])
 
 back = InlineKeyboardMarkup(inline_keyboard=[
