@@ -71,5 +71,5 @@ if __name__ == '__main__':
     # for m in messages:
     #     print(m)
 
-    # db.delete_messages_before_time(table_name, "2025-08-00T00:00:00")
+    db.delete_messages_before_time(table_name, "2025-08-09T00:00:00")
     db.select_messages_by_time(table_name, "2025-08-08T00:00:00")

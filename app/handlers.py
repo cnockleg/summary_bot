@@ -213,23 +213,31 @@ async def get_datetime(callback: CallbackQuery, state: FSMContext):
 from db import MessageDB
 @router.message(F.text)
 async def context_handler(message: Message):
+    chatid = str(message.chat.id)
     userid = message.from_user.id
     username = message.from_user.username
     text = message.text
 
+    if "-" in chatid:
+        chatid = chatid[1:]
+
     print(userid, username, text)
     db = MessageDB()
-    db.create_table("chat6")
-    db.insert_message(table_name="chat6", user_id=userid, username=username, message=text)
+    db.create_table(f"chat_{chatid}")
+    db.insert_message(table_name=f"chat_{chatid}", user_id=userid, username=username, message=text)
 
 @router.callback_query(F.data == "check_table")
 async def data_check(callback: CallbackQuery):
     db = MessageDB()
+    chatid = str(callback.message.chat.id)
+
+    if "-" in chatid:
+        chatid = chatid[1:]
     await callback.answer()
 
-    messages = db.select_messages_by_time("chat6", "2025-08-08T00:00:00")
+    messages = db.select_messages_by_time(f"chat_{chatid}", "2025-08-08T00:00:00")
     formatted_messages = "\n".join(
-        f"ID: {m[0]}, UserID: {m[1]}, Username: {m[2]}, Time: {m[3]}"
+        f"ID: {m[0]}, UserID: {m[1]}, Username: {m[2]}, Text: {m[3]}"
         for m in messages
     )
 
