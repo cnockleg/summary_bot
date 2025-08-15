@@ -10,6 +10,7 @@ from aiogram.fsm.context import FSMContext
 from faster_whisper import WhisperModel
 
 import app.keyboard as kb
+from db import MessageDB
 from ai_test import query
 
 
@@ -174,6 +175,7 @@ async def hours_minus(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     data["hrs"] = max(0, data.get("hrs") - 1)
     await state.update_data(hrs=data["hrs"])
+    
     await callback.answer()
     await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
 
@@ -181,6 +183,7 @@ async def hours_minus(callback: CallbackQuery, state: FSMContext):
 async def hours_plus(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     data["hrs"] = min(23, data.get("hrs") + 1)
+
     await state.update_data(hrs=data["hrs"])
     await callback.answer()
     await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
@@ -189,6 +192,7 @@ async def hours_plus(callback: CallbackQuery, state: FSMContext):
 async def minutes_minus(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     data["mins"] = max(0, data.get("mins") - 5)
+
     await state.update_data(mins=data["mins"])
     await callback.answer()
     await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
@@ -197,6 +201,7 @@ async def minutes_minus(callback: CallbackQuery, state: FSMContext):
 async def minutes_plus(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     data["mins"] = min(59, data.get("mins") + 5)
+
     await state.update_data(mins=data["mins"])
     await callback.answer()
     await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
@@ -210,7 +215,6 @@ async def get_datetime(callback: CallbackQuery, state: FSMContext):
 
 # _______________________________________________________________________________________________________________________________________________
 
-from db import MessageDB
 @router.message(F.text)
 async def context_handler(message: Message):
     chatid = str(message.chat.id)
