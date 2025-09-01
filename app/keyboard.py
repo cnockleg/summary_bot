@@ -44,15 +44,25 @@ async def list_of_smth():
     keyboard.add(InlineKeyboardButton(text="Назад", callback_data="back_buttons"))
     return keyboard.adjust(2).as_markup()
 
-def summar(hours, minutes):
-    summ_date = InlineKeyboardMarkup(inline_keyboard=[
+def time_summar(hours, minutes):
+    summ_time = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Часы", callback_data="hrs")],
         [InlineKeyboardButton(text="<<", callback_data="hours_minus"), InlineKeyboardButton(text=str(hours), callback_data="hours"), InlineKeyboardButton(text=">>", callback_data="hours_plus")],
         [InlineKeyboardButton(text="Минуты", callback_data="mins")],      
         [InlineKeyboardButton(text="<<", callback_data="minutes_minus"), InlineKeyboardButton(text=str(minutes), callback_data="minutes"), InlineKeyboardButton(text=">>", callback_data="minutes_plus")],
-        [InlineKeyboardButton(text="Назад", callback_data="back"), InlineKeyboardButton(text="Далее", callback_data="datetime_next")]
+        [InlineKeyboardButton(text="Назад", callback_data="back"), InlineKeyboardButton(text="Далее", callback_data="starttime_next")]
         ])
-    return summ_date
+    return summ_time
+
+def dur_summar(minutes):
+    summ_dur = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Минуты", callback_data="mins")],  
+        [InlineKeyboardButton(text="<<", callback_data="super_durminutes_minus"), InlineKeyboardButton(text="<", callback_data="durminutes_minus"), 
+            InlineKeyboardButton(text=str(minutes), callback_data="durminutes"), 
+            InlineKeyboardButton(text=">", callback_data="durminutes_plus"), InlineKeyboardButton(text=">>", callback_data="super_durminutes_plus")],
+        [InlineKeyboardButton(text="Назад", callback_data="back"), InlineKeyboardButton(text="Далее", callback_data="durtime_next")]
+        ])
+    return summ_dur
 
 dates = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Сегондя", callback_data="date_today")],

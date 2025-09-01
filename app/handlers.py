@@ -1,5 +1,6 @@
 import tempfile
 from asyncio import sleep
+from datetime import datetime, date, timedelta, time
 
 from aiogram import F, Router
 from aiogram.filters import CommandStart, Command
@@ -29,7 +30,8 @@ class Dcd(StatesGroup):
 
 class Time(StatesGroup):
     choosedate = State()
-    choosetime = State()
+    choosestarttime = State()
+    chooseduration = State()
 
 # _______________________________________________________________________________________________________________________________________________
 
@@ -165,9 +167,9 @@ async def auto_sum_choosetime(callback: CallbackQuery, state: FSMContext):
     await sleep(0.3)
     # await message.delete()
     await state.update_data(date=callback.data)
-    await state.set_state(Time.choosetime)
+    await state.set_state(Time.choosestarttime)
     data = await state.update_data(hrs=12, mins=40)
-    await callback.message.edit_text("теперь выбери время", reply_markup=kb.summar(data['hrs'], data['mins']))
+    await callback.message.edit_text("теперь выбери время начала", reply_markup=kb.time_summar(data['hrs'], data['mins']))
 
 
 @router.callback_query(F.data == "hours_minus")
@@ -177,7 +179,7 @@ async def hours_minus(callback: CallbackQuery, state: FSMContext):
     await state.update_data(hrs=data["hrs"])
     
     await callback.answer()
-    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
+    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.time_summar(data['hrs'], data['mins']))
 
 @router.callback_query(F.data == "hours_plus")
 async def hours_plus(callback: CallbackQuery, state: FSMContext):
@@ -186,7 +188,7 @@ async def hours_plus(callback: CallbackQuery, state: FSMContext):
 
     await state.update_data(hrs=data["hrs"])
     await callback.answer()
-    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
+    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.time_summar(data['hrs'], data['mins']))
 
 @router.callback_query(F.data == "minutes_minus")
 async def minutes_minus(callback: CallbackQuery, state: FSMContext):
@@ -195,7 +197,7 @@ async def minutes_minus(callback: CallbackQuery, state: FSMContext):
 
     await state.update_data(mins=data["mins"])
     await callback.answer()
-    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
+    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.time_summar(data['hrs'], data['mins']))
 
 @router.callback_query(F.data == "minutes_plus")
 async def minutes_plus(callback: CallbackQuery, state: FSMContext):
@@ -204,13 +206,92 @@ async def minutes_plus(callback: CallbackQuery, state: FSMContext):
 
     await state.update_data(mins=data["mins"])
     await callback.answer()
-    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.summar(data['hrs'], data['mins']))
+    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.time_summar(data['hrs'], data['mins']))
 
 
-@router.callback_query(F.data == "datetime_next")
+@router.callback_query(F.data == "starttime_next")
+async def auto_sum_choosedur(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    await state.set_state(Time.chooseduration)
+    data = await state.update_data(dur_mins=120)
+    await callback.message.edit_text(text='че', reply_markup=kb.dur_summar(data['dur_mins']))
+
+@router.callback_query(F.data == "durminutes_minus")
+async def super_minutes_minus(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    data["dur_mins"] = max(0, data.get("dur_mins") - 10)
+
+    await state.update_data(dur_mins=data["dur_mins"])
+    await callback.answer()
+    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.dur_summar(data['dur_mins']))
+
+@router.callback_query(F.data == "durminutes_plus")
+async def super_minutes_plus(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    data["dur_mins"] = min(999, data.get("dur_mins") + 10)
+
+    await state.update_data(dur_mins=data["dur_mins"])
+    await callback.answer()
+    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.dur_summar(data['dur_mins']))
+
+@router.callback_query(F.data == "super_durminutes_minus")
+async def super_minutes_minus(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    data["dur_mins"] = max(0, data.get("dur_mins") - 60)
+
+    await state.update_data(dur_mins=data["dur_mins"])
+    await callback.answer()
+    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.dur_summar(data['dur_mins']))
+
+@router.callback_query(F.data == "super_durminutes_plus")
+async def super_minutes_plus(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    data["dur_mins"] = min(999, data.get("dur_mins") + 60)
+
+    await state.update_data(dur_mins=data["dur_mins"])
+    await callback.answer()
+    await callback.message.edit_text(text="соси пока не готово", reply_markup=kb.dur_summar(data['dur_mins']))
+
+
+@router.callback_query(F.data == "durtime_next")
 async def get_datetime(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
-    await callback.message.edit_text(text="красава, я обязательно это никуда не запишу")
+    data = await state.get_data()
+    chatid = str(callback.message.chat.id)
+    if "-" in chatid:
+        chatid = chatid[1:]
+    
+    selected_date = data.get('date')
+    selected_start_hours = data.get('hrs')
+    selected_start_mins = data.get('mins')
+    selected_duration_mins = data.get('dur_mins')
+
+    end_mins = (selected_start_hours * 60 + selected_start_mins + selected_duration_mins)
+    selected_end_hours = end_mins // 60
+    selected_end_mins = end_mins % 60
+
+    def get_time(hours, minutes):
+        if selected_date == "date_today":
+            day = date.today()
+        elif selected_date == "date_onedayago":
+            day = date.today() - timedelta(days=1)
+        elif selected_date == "date_twodayago":
+            day = date.today() - timedelta(days=2)
+
+        base_datetime = datetime.combine(day, time(hour=hours, minute=minutes, second=0))
+        return base_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+
+    start_time_str = get_time(selected_start_hours, selected_start_mins)
+    end_time_str = get_time(selected_end_hours, selected_end_mins)
+
+    print(start_time_str)
+    print(end_time_str)
+    print(chatid)
+
+    db = MessageDB()
+    result = db.select_messages_by_time2(table_name=f"chat_{chatid}", start_time=start_time_str, end_time=end_time_str)
+
+    await callback.message.edit_text(text=f"красава, я обязательно это никуда не запишу, но ты выбрал {selected_date}, {selected_start_hours}, {selected_start_mins}, {selected_duration_mins}, \n{result}")
     await state.clear()
 
 # _______________________________________________________________________________________________________________________________________________

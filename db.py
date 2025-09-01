@@ -46,6 +46,18 @@ class MessageDB:
             """, (start_time,))
             return cursor.fetchall()
 
+# этоя написал
+    def select_messages_by_time2(self, table_name, start_time, end_time):
+        """Возвращает список сообщений, отправленных после указанного времени"""
+        with self._connect() as conn:
+            cursor = conn.cursor()
+            cursor.execute(f"""
+                SELECT * FROM {table_name}
+                WHERE timestamp >= ? AND timestamp <= ?;
+            """, (start_time, end_time))
+            return cursor.fetchall()
+# этоя написал
+
     def delete_messages_before_time(self, table_name, cutoff_time):
         """Удаляет сообщения, отправленные до указанного времени"""
         with self._connect() as conn:
@@ -59,7 +71,7 @@ class MessageDB:
 if __name__ == '__main__':
         
     db = MessageDB()
-    table_name = 'chat2'
+    table_name = 'chat_1061229503'
 
     # db.create_table(table_name)
 
@@ -71,5 +83,8 @@ if __name__ == '__main__':
     # for m in messages:
     #     print(m)
 
-    db.delete_messages_before_time(table_name, "2025-08-09T00:00:00")
-    db.select_messages_by_time(table_name, "2025-08-08T00:00:00")
+    # db.delete_messages_before_time(table_name, "2025-08-09T00:00:00")
+    # db.select_messages_by_time(table_name, "2025-08-08T00:00:00")
+    # print(db.list_tables())
+
+    # print(db.select_messages_by_time2(table_name="chat_1061229503", start_time='2025-09-02T01:10:00', end_time='2025-09-02T01:40:00'))
